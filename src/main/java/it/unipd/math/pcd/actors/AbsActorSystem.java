@@ -37,55 +37,46 @@
  */
 package it.unipd.math.pcd.actors;
 
+import it.unipd.math.pcd.actors.exceptions.NoSuchActorException;
+
+import java.util.Map;
+
 /**
- * The system of actors. Using the system it is possible to:
- * <ul>
- *     <li>Create a new instance of an actor</li>
- *     <li>Stopping an actor</li>
- * </ul>
+ * A map-based implementation of the actor system.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface ActorSystem {
+public abstract class AbsActorSystem implements ActorSystem {
 
     /**
-     * Create an instance of {@code actor} returning a {@link ActorRef reference} to it using the given {@code mode}.
-     *
-     * @param actor The type of actor that has to be created
-     * @param mode The mode of the actor requested
-     *
-     * @return A reference to the actor
+     * Associates every Actor created with an identifier.
      */
-    ActorRef<? extends Message> actorOf(Class<Actor<?>> actor, ActorMode mode);
+    private Map<ActorRef<?>, Actor<?>> actors;
 
-    /**
-     * Create an instance of {@code actor} that executes locally.
-     *
-     * @param actor The type of actor that has to be created
-     * @return A reference to the actor
-     */
-    ActorRef<? extends Message> actorOf(Class<Actor<?>> actor);
+    public ActorRef<? extends Message> actorOf(Class<Actor<?>> actor, ActorMode mode) {
 
-    /**
-     * Stops {@code actor}.
-     *
-     * @param actor The actor to be stopped
-     */
-    void stop(ActorRef<?> actor);
+        // ActorRef instance
+        ActorRef<?> reference;
+        try {
+            // Create the reference to the actor
+            reference = this.createActorReference(mode);
+            // Create the new instance of the actor
+            Actor actorInstance = ((AbsActor) actor.newInstance()).setSelf(reference);
+            // Associate the reference to the actor
+            actors.put(reference, actorInstance);
 
-    /**
-     * Stops all actors of the system.
-     */
-    void stop();
-
-    /**
-     * Possible modes to create an actor. {@code LOCALE} mode is used to create an actor
-     * that acts in the local system. {@code REMOTE} mode is used to create remote actors.
-     */
-    enum ActorMode {
-        LOCAL,
-        REMOTE
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new NoSuchActorException(e);
+        }
+        return reference;
     }
+
+    @Override
+    public ActorRef<? extends Message> actorOf(Class<Actor<?>> actor) {
+        return this.actorOf(actor, ActorMode.LOCAL);
+    }
+
+    protected abstract ActorRef createActorReference(ActorMode mode);
 }

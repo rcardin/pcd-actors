@@ -45,7 +45,7 @@ package it.unipd.math.pcd.actors;
  * @version 1.0
  * @since 1.0
  */
-public interface ActorRef<T extends Message> {
+public interface ActorRef<T extends Message> extends Comparable<ActorRef> {
 
     /**
      * Sends a {@code message} to another actor

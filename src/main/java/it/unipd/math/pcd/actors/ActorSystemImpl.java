@@ -38,54 +38,46 @@
 package it.unipd.math.pcd.actors;
 
 /**
- * The system of actors. Using the system it is possible to:
- * <ul>
- *     <li>Create a new instance of an actor</li>
- *     <li>Stopping an actor</li>
- * </ul>
+ * A possible implementation of the actor system. This implementation is accessible from everywhere due to a Singleton
+ * approach. A better implementation should use Dependency Injection
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface ActorSystem {
+public class ActorSystemImpl extends AbsActorSystem {
 
     /**
-     * Create an instance of {@code actor} returning a {@link ActorRef reference} to it using the given {@code mode}.
+     * The unique instance of the actor system
+     */
+    private static final ActorSystem INSTANCE = new ActorSystemImpl();
+
+    /**
+     * Returns the unique instance of the actor system
      *
-     * @param actor The type of actor that has to be created
-     * @param mode The mode of the actor requested
-     *
-     * @return A reference to the actor
+     * @return A reference to the {@link ActorSystem actor system}
      */
-    ActorRef<? extends Message> actorOf(Class<Actor<?>> actor, ActorMode mode);
+    public static ActorSystem getInstance() {
+        return INSTANCE;
+    }
 
-    /**
-     * Create an instance of {@code actor} that executes locally.
-     *
-     * @param actor The type of actor that has to be created
-     * @return A reference to the actor
-     */
-    ActorRef<? extends Message> actorOf(Class<Actor<?>> actor);
+    public ActorSystemImpl() {
+        // TODO Insert your implementation here
+    }
 
-    /**
-     * Stops {@code actor}.
-     *
-     * @param actor The actor to be stopped
-     */
-    void stop(ActorRef<?> actor);
+    @Override
+    protected ActorRef createActorReference(ActorMode mode) {
+        // TODO Insert your implementation here
+        return null;
+    }
 
-    /**
-     * Stops all actors of the system.
-     */
-    void stop();
+    @Override
+    public void stop(ActorRef<?> actor) {
+        // TODO Insert your implementation here
+    }
 
-    /**
-     * Possible modes to create an actor. {@code LOCALE} mode is used to create an actor
-     * that acts in the local system. {@code REMOTE} mode is used to create remote actors.
-     */
-    enum ActorMode {
-        LOCAL,
-        REMOTE
+    @Override
+    public void stop() {
+        // TODO Insert your implementation here
     }
 }

@@ -38,54 +38,32 @@
 package it.unipd.math.pcd.actors;
 
 /**
- * The system of actors. Using the system it is possible to:
- * <ul>
- *     <li>Create a new instance of an actor</li>
- *     <li>Stopping an actor</li>
- * </ul>
+ * Defines common properties of all actors.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface ActorSystem {
+public abstract class AbsActor<T extends Message> implements Actor<T> {
 
     /**
-     * Create an instance of {@code actor} returning a {@link ActorRef reference} to it using the given {@code mode}.
+     * Self-reference of the actor
+     */
+    protected ActorRef<T> self;
+
+    /**
+     * Sender of the current message
+     */
+    protected ActorRef<T> sender;
+
+    /**
+     * Sets the self-referece.
      *
-     * @param actor The type of actor that has to be created
-     * @param mode The mode of the actor requested
-     *
-     * @return A reference to the actor
+     * @param self The reference to itself
+     * @return The actor.
      */
-    ActorRef<? extends Message> actorOf(Class<Actor<?>> actor, ActorMode mode);
-
-    /**
-     * Create an instance of {@code actor} that executes locally.
-     *
-     * @param actor The type of actor that has to be created
-     * @return A reference to the actor
-     */
-    ActorRef<? extends Message> actorOf(Class<Actor<?>> actor);
-
-    /**
-     * Stops {@code actor}.
-     *
-     * @param actor The actor to be stopped
-     */
-    void stop(ActorRef<?> actor);
-
-    /**
-     * Stops all actors of the system.
-     */
-    void stop();
-
-    /**
-     * Possible modes to create an actor. {@code LOCALE} mode is used to create an actor
-     * that acts in the local system. {@code REMOTE} mode is used to create remote actors.
-     */
-    enum ActorMode {
-        LOCAL,
-        REMOTE
+    protected final Actor<T> setSelf(ActorRef<T> self) {
+        this.self = self;
+        return this;
     }
 }
