@@ -38,21 +38,35 @@
 package it.unipd.math.pcd.actors;
 
 /**
- * An actor in the <code>pcd-actor</code> system that receives
- * messages of a defined type.
+ * The system of actors. Using the system it is possible to:
+ * <ul>
+ *     <li>Create a new instance of an actor</li>
+ *     <li>Stopping an actor</li>
+ * </ul>
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface Actor<T extends Message> {
+public interface ActorSystem {
 
     /**
-     * Defines the interface of the actor.
+     * Create an instance of {@code actor} returing a {@link ActorRef reference} to it.
      *
-     * @param message The type of messages the actor can receive
-     * @throws it.unipd.math.pcd.actors.exceptions.UnsupportedMessageException If the message is not supported by
-     *         the actor.
+     * @param actor The type of actor that has to be created
+     * @return A reference to the actor
      */
-    void receive(T message);
+    ActorRef<? extends Message> actorOf(Class<Actor<?>> actor);
+
+    /**
+     * Stops {@code actor}.
+     *
+     * @param actor The actor to be stopped
+     */
+    void stop(ActorRef<?> actor);
+
+    /**
+     * Stops all actors of the system.
+     */
+    void stop();
 }

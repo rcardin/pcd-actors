@@ -38,21 +38,20 @@
 package it.unipd.math.pcd.actors;
 
 /**
- * An actor in the <code>pcd-actor</code> system that receives
- * messages of a defined type.
+ * A reference of an actor that allow to locate it in the actor system.
+ * Using this reference it is possible to send a message among actors.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface Actor<T extends Message> {
+public interface ActorRef<T extends Message> {
 
     /**
-     * Defines the interface of the actor.
+     * Sends a {@code message} to another actor
      *
-     * @param message The type of messages the actor can receive
-     * @throws it.unipd.math.pcd.actors.exceptions.UnsupportedMessageException If the message is not supported by
-     *         the actor.
+     * @param message The message to send
+     * @param to The actor to which sending the message
      */
-    void receive(T message);
+    void send(T message, ActorRef to);
 }
