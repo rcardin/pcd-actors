@@ -124,7 +124,7 @@ Most of time, the client will be an actor itself, that ask to the self reference
 
 ## Building
 
-The `pcd-actors` project is configured as a Maven project. In detail, it was generated using the following command line:
+The `pcd-actors` project is configured as a [Maven](https://maven.apache.org/) project. In detail, it was generated using the following command line:
  
     mvn archetype:generate -DarchetypeGroupId=it.unipd.math.pcd.actors -DarchetypeArtifactId=pcd-actors -DarchetypeVersion=1.0-SNAPSHOT
 
