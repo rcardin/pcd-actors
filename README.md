@@ -86,14 +86,16 @@ methods:
     void stop(ActorRef<?> actor);
     
 #### Singleton view of the actor system
-The actor system MUST have a single active instance. In order to implement correctly the remote system, this instance 
-have to be serializable. The best way to achieve this functionality is to use a *dependence injection* framework, such
-as [Google Guice](https://github.com/google/guice), [Spring](http://projects.spring.io/spring-framework/) or 
-[CDI](http://docs.oracle.com/javaee/6/tutorial/doc/giwhl.html). However, the use of an DI framework is far beyond the 
-scopes of this little project. 
+The actor system MUST have a single active instance. This instance have to be necessarily initialized in the `main` 
+method of the program.
 
-Then, the actor system is implemented as a Singleton by the `ActorSystemImpl` concrete type. The chosen Singleton 
-implementation is the static-not lazy implementation.
+In order to implement correctly the remote system, this instance have to be serializable. The best way to achieve this 
+functionality is to use a *dependence injection* framework, such as [Google Guice](https://github.com/google/guice), 
+[Spring](http://projects.spring.io/spring-framework/) or [CDI](http://docs.oracle.com/javaee/6/tutorial/doc/giwhl.html). 
+However, the use of an DI framework is far beyond the scopes of this little project. 
+
+So, the above property must be fulfilled using other techniques, that do not use explicitly any form of design pattern
+Singleton
 
 ### Type interactions
 
@@ -115,3 +117,11 @@ to obtain the real instance of an actor (not its actor reference) the actor syst
 ![Message sending](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20sending.png)
 
 Most of time, the client will be an actor itself, that ask to the self reference to send a message to another actor.
+
+## Testing
+
+TODO
+
+## Building
+
+TODO
