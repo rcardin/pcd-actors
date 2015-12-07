@@ -27,11 +27,16 @@ the message it can respond to. The actor interface is fully defined by the metho
 
     void receive(T message)
     
+If an actor does not know ho to respond to a particular message type, an `UnsupportedMessageException` is thrown. 
+
 Messages received by an actor are not immediately processed. They must be placed inside a dedicated queue, called 
 **mail box**. Messages inside mail box have to be processed *asynchronously*, which means that the processing of a 
 message has not to block the receiving loop of other messages by the actor.
   
 The implementation of the actor must optimize the use of synchronized threads to satisfy the above requirements.
+
+An actor has an actor reference (see the below type `ActorRef`) to itself and to the sender of the current processed
+message.
  
 ### ActorRef
 A reference to an actor (formally an `ActorRef`) is an abstraction of the model used to address actors. There are two
@@ -46,18 +51,19 @@ Once an instance of `ActorRef` was obtained, it is possible to send a messages t
 following method:
  
     void send(T message, ActorRef to);
-    
-To do the magic, it is necessary to use the instance of `ActorSystem` described below.
+
+To do the magic, it is necessary to use the instance of `ActorSystem` described below. Messages can be sent only among 
+actors. No other type can send a message to an actor.
 
 ### Message
-A message is the piece of information that actor send among each others. Each message should be logically divided into
+A `Message` is the piece of information that actor send among each others. Each message should be logically divided into
 three parts:
 
  * A *tag*, which represents the operation requested by the message
  * A *target*, which represents the address of the actor receiving the message
  * A *payload*, which may represent the data that have to be sent with the message
  
- ![Graphical representation of the structure of a message](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20structure.png)
+![Graphical representation of the structure of a message](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20structure.png)
 
 ### Actor system
 The actor system (`ActorSystem`) has the responsibility to maintain reference to each actor created. Using the actor
@@ -89,3 +95,23 @@ scopes of this little project.
 Then, the actor system is implemented as a Singleton by the `ActorSystemImpl` concrete type. The chosen Singleton 
 implementation is the static-not lazy implementation.
 
+### Type interactions
+
+This section shows how the above types interact with each other to fulfill the relative functionality.
+ 
+#### Actor creation 
+To create a new actor, ask the actor system to do the dirty job.
+ 
+![Actor creation](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Actor%20creation.png)
+
+So, first of all, a client must obtain a reference to the actor system. Using this reference, it asks the system to 
+create an new instance of an actor. The result of this request is the actor reference to the actor.
+
+#### Message sending
+
+Once a client have obtained the references to two actors it can ask the first to send a message to the second. Clearly,
+to obtain the real instance of an actor (not its actor reference) the actor system must be queried.
+
+![Message sending](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20sending.png)
+
+Most of time, the client will be an actor itself, that ask to the self reference to send a message to another actor.
