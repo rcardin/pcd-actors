@@ -10,6 +10,10 @@ The main abstract types of the system are the following:
    local actors and actors that execute remotely
  * `ActorSystem`: an actor system provides the utilities to create new instances of actors and to locate them
 
+The system was intended as a mock to realize the project of the Java course I run in the bachelor-level informatics 
+curriculum at the University of Padova (please, refer to 
+[Programmazione Concorrente e Distribuita](http://www.math.unipd.it/~rcardin/pcd.html), in italian).
+
 ## Logical architecture 
  
 All together they build the software architecture that in the figure below.
