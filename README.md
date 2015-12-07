@@ -118,10 +118,41 @@ to obtain the real instance of an actor (not its actor reference) the actor syst
 
 Most of time, the client will be an actor itself, that ask to the self reference to send a message to another actor.
 
-## Testing
-
-TODO
-
 ## Building
 
-TODO
+The `pcd-actors` project is configured as a Maven project. In detail, it was generated using the following command line:
+ 
+    mvn archetype:generate -DarchetypeGroupId=it.unipd.math.pcd.actors -DarchetypeArtifactId=pcd-actors -DarchetypeVersion=1.0-SNAPSHOT
+
+The folder tree generate is the following:
+
+    project
+    |-- pom.xml
+    `-- src
+        |-- main
+        |   `-- java
+        |       `-- App.java
+        `-- test
+            `-- java
+                `-- AppTest.java
+
+As usual, put the source files under the folder called `scr/main/java`; Put the test files (unit / integration) under
+the folder `scr/test/java`.
+
+To build the actor system library use the following command
+
+    $ mvn package
+    
+The output library will be created by Maven inside the folder `target`, with name `pcd-actors.jar`. 
+
+To run the tests use the command
+
+    $ mvn test
+     
+The output of the console will tell you if the build and the test processes have finished correctly.  
+
+## Testing
+
+Testing of each entity is done with [JUnit 4](http://junit.org/). As `pcd-actors` is a Maven project, tests are located
+in the `scr/test/java` folder. Integration tests will be added in the next weeks. These tests aim to verify that the
+whole system satisfies above requirements.

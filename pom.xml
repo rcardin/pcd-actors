@@ -6,6 +6,7 @@
   <artifactId>pcd-actors</artifactId>
   <version>1.0-SNAPSHOT</version>
   <build>
+    <finalName>pcd-actors</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
