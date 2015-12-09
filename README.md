@@ -29,9 +29,7 @@ It follows a brief description of each of the main logical types of `pcd-actors`
 An actor belonging to the type `Actor` holds the "interface" of the actor. The interface of an actor is identified by
 the message it can respond to. The actor interface is fully defined by the method
 
-    void receive(T message)
-    
-If an actor does not know ho to respond to a particular message type, an `UnsupportedMessageException` is thrown. 
+    void receive(T message) 
 
 Messages received by an actor are not immediately processed. They must be placed inside a dedicated queue, called 
 **mail box**. Messages inside mail box have to be processed *asynchronously*, which means that the processing of a 
@@ -41,6 +39,17 @@ The implementation of the actor must optimize the use of synchronized threads to
 
 An actor has an actor reference (see the below type `ActorRef`) to itself and to the sender of the current processed
 message.
+
+#### Unknown messages
+
+In the simple implementation requested by `pcd-actors`, if an actor does not know how to respond to a particular message 
+type, an `UnsupportedMessageException` is thrown. This is not the standard behaviour of an actor model. In a full
+implementation of an actor model it should be a responsibility of the user to decide which action to take with respect
+to an unknown message.
+
+Moreover, the policy that let us thrown an exception in response to an unknown message is possible because in 
+`pcd-actors` an actor cannot change its interface through time. Actually, throwing an exception will stop the actor,
+making useless any possible change of interface.
  
 ### ActorRef
 A reference to an actor (formally an `ActorRef`) is an abstraction of the model used to address actors. There are two
