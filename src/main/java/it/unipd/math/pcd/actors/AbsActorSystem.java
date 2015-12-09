@@ -55,7 +55,7 @@ public abstract class AbsActorSystem implements ActorSystem {
      */
     private Map<ActorRef<?>, Actor<?>> actors;
 
-    public ActorRef<? extends Message> actorOf(Class<Actor<?>> actor, ActorMode mode) {
+    public ActorRef<? extends Message> actorOf(Class<? extends Actor> actor, ActorMode mode) {
 
         // ActorRef instance
         ActorRef<?> reference;
@@ -74,7 +74,7 @@ public abstract class AbsActorSystem implements ActorSystem {
     }
 
     @Override
-    public ActorRef<? extends Message> actorOf(Class<Actor<?>> actor) {
+    public ActorRef<? extends Message> actorOf(Class<? extends Actor> actor) {
         return this.actorOf(actor, ActorMode.LOCAL);
     }
 

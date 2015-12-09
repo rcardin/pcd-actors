@@ -58,7 +58,7 @@ public interface ActorSystem {
      *
      * @return A reference to the actor
      */
-    ActorRef<? extends Message> actorOf(Class<Actor<?>> actor, ActorMode mode);
+    ActorRef<? extends Message> actorOf(Class<? extends Actor> actor, ActorMode mode);
 
     /**
      * Create an instance of {@code actor} that executes locally.
@@ -66,7 +66,7 @@ public interface ActorSystem {
      * @param actor The type of actor that has to be created
      * @return A reference to the actor
      */
-    ActorRef<? extends Message> actorOf(Class<Actor<?>> actor);
+    ActorRef<? extends Message> actorOf(Class<? extends Actor> actor);
 
     /**
      * Stops {@code actor}.
