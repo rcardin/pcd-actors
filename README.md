@@ -194,7 +194,7 @@ to be thread on their own.
 
 > **Q**: `ActorSystem` is a Singleton?
 
-In a idyllic and perfect world we would used a *dependency injection* framework, to guarantee that `ActorSystem` will be
+In an idyllic and perfect world we would used a *dependency injection* framework, to guarantee that `ActorSystem` will be
 instantiated only once. Unfortunately, we can't use such frameworks, due to their complexity. You can't implement 
 `ActorSystem` as a Singleton neither. Then, you have to be sure that every object that has to use an instance of 
 `ActorSystem` will use the same one.
@@ -210,6 +210,14 @@ at least two implementation of this type: one that refers to local actors, and o
 interaction with the rest of system is summarized in the following sequence diagram:
 
 ![Message sending](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20sending.png)
+
+> **Q**: The logical view that was given of the `Message` type is equal to its physical view (a.k.a. implementation), 
+  isn't it?
+    
+No, the logical view was given to describe the generic actor model. In `pcd-actors` `Message`s are completely free of
+implementation, from a library point of view.
+
+> **Q**: 
 
 ## License
 
