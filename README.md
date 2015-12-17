@@ -174,13 +174,13 @@ You're free (which means that you're expected) to add your own tests to your imp
 
 ## F.A.Q.
 
-> The meta framework contains four interfaces and two abstract classes. What should I have to implement?
+> **Q**: The meta framework contains four interfaces and two abstract classes. What should I have to implement?
 
 If you think about the testing process, you will sure understand that tests cannot be run on types that do not exist in
 the original process. Then, you're not expected to implement the `Message` interface, nor to give a concrete 
 implementation of `AbsActor`.
 
-> Implementations should create abstract or concrete type?
+> **Q**: Implementations should create abstract or concrete type?
 
 It depends: a user of `pcd-actors` has not to give an implementation of `ActorSystem`, then it is up to you to give a 
 full implementation of this type. Also `ActorRef` needs at least two implementation: one that refers to local actors,
