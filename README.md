@@ -186,6 +186,31 @@ It depends: a user of `pcd-actors` has not to give an implementation of `ActorSy
 full implementation of this type. Also `ActorRef` needs at least two implementation: one that refers to local actors,
 and one that refers to remote actors.
 
+> **Q**: We have to implement some synchronized data structures. `Actor` and `ActorSystem` have to be implemented has
+  thread their own?
+  
+No, they don't. These two types probably generates many threads to accomplish to their scope, but they are not intended
+to be thread on their own.
+
+> **Q**: `ActorSystem` is a Singleton?
+
+In a idyllic and perfect world we would used a *dependency injection* framework, to guarantee that `ActorSystem` will be
+instantiated only once. Unfortunately, we can't use such frameworks, due to their complexity. You can't implement 
+`ActorSystem` as a Singleton neither. Then, you have to be sure that every object that has to use an instance of 
+`ActorSystem` will use the same one.
+
+> **Q**: Can a user of `pcd-actors` extend `ActorSystem`?
+
+No, she definitely can not
+
+> **Q**: How will `ActorRef` interact with the rest of the system? Which is its role?
+
+`ActorRef` decouples the implementation of an actor from the way it is invoked by another actor. Then, there will be
+at least two implementation of this type: one that refers to local actors, and one that refers to remote actors. Its
+interaction with the rest of system is summarized in the following sequence diagram:
+
+![Message sending](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20sending.png)
+
 ## License
 
 The MIT License (MIT)
