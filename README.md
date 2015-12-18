@@ -217,7 +217,65 @@ interaction with the rest of system is summarized in the following sequence diag
 No, the logical view was given to describe the generic actor model. In `pcd-actors` `Message`s are completely free of
 implementation, from a library point of view.
 
-> **Q**: 
+> **Q**: How does an `Actor` instance acquire the reference to the sender `ActorRef`
+
+You don't have to use the `Message` to implement this feature.
+
+> **Q**: A user of `pcd-actors` can use only the methods of the interfaces that are defined in the meta-framework, 
+  can't she?
+  
+Definitely yes. You can add which ever method you desire, but these will not be tested and valuated.
+
+> **Q**: Why can we send only messages of type `Message` to actors?
+
+This is a simplification. This way, we can define a custom protocol of communication among actors that is the same in
+all the implementations of the library and relies on the object oriented principles.
+
+> **Q**: If the meta-framework gives only the abstract class `AbsActorSystem`, how the hell will the tests to use the
+  library?
+  
+This is a good question. I think I will use some reflection to discover which of your classes extends `AbsActorSystem`.
+
+> **Q**: Do we have to implement the `receive` method of the type `Actor` for the project? 
+
+No, you don't. That is the hook that a user of `pcd-actors` have to implement to use the library.
+
+> **Q**: A client that intends to use both local and remote actors might interacts with them in the same way, 
+  doesn't she?
+  
+Local and remote actors have to expose the same interface to a client.
+
+> **Q**: How can I guess when the actor have to process the next message?
+
+This is the focal point of the project and I can't tell you how to implement this feature ;)
+
+> **Q**: Can a `Message` contain some logic or is it a simple placeholder that tells an actor what to do?
+  
+As previously stated a `Message` must not have any implementation. Refer to 
+[Akka/Java: Handling multiple message types inside a custom actor?](http://stackoverflow.com/questions/25917613/akka-java-handling-multiple-message-types-inside-a-custom-actor)
+on Stackoverflow to understand why.
+
+> **Q**: An `Actor` is an immutable object? Can an `Actor` change its interface?
+
+An actor can change it's interface in the original actor model. In `pcd-actors` we can operate a simplification and **we
+don't allow an actor to change its interface during time**. An actor has an internal state that changes during time. So
+it cannot be consider as an immutable object.
+
+> **Q**: An actor that sends a message to another actor have to receive back an ack/nack message, doesn't she?
+
+Nope. We do not want to implement any predefined protocol of communication between actors. It will be up to the end-user
+to define a protocol such that.
+
+> **Q**: Can we use some external framework to implement the meta-framework, such as Spring?
+
+I prefer that you don't add any additional framework to the original project. The only framework you can use is 
+[Mockito](http://mockito.org/) during unit test process
+
+> **Q**: Can we use external tools to check the style of the code we will produce?
+
+Yes, you can (and you should do too). 
+
+
 
 ## License
 
@@ -237,3 +295,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
