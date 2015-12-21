@@ -275,7 +275,10 @@ I prefer that you don't add any additional framework to the original project. Th
 
 Yes, you can (and you should do too). 
 
+> **Q:**: Can we add some methods to the given classes? 
 
+Yes, sure. You can add whatever method you think it could help. But, be aware: Do not modify the public interface of 
+these types because unit tests cannot rely on your custom interface.
 
 ## License
 
