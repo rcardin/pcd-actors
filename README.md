@@ -212,7 +212,7 @@ No, she definitely can not
 at least two implementation of this type: one that refers to local actors, and one that refers to remote actors. Its
 interaction with the rest of system is summarized in the following sequence diagram:
 
-![Message sending](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20sending.png)
+![Message sending](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20sending_1.png)
 
 > **Q**: The logical view that was given of the `Message` type is equal to its physical view (a.k.a. implementation), 
   isn't it?
