@@ -127,7 +127,10 @@ create an new instance of an actor. The result of this request is the actor refe
 Once a client have obtained the references to two actors it can ask the first to send a message to the second. Clearly,
 to obtain the real instance of an actor (not its actor reference) the actor system must be queried.
 
-![Message sending](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20sending.png)
+![Message sending](http://www.math.unipd.it/~rcardin/pcd/pcd-actors/Message%20sending_1.png)
+
+Clearly, the `ActorRef` cannot be directly responsible of the `receive` method call on an `Actor`. The responsibility of
+an `ActorRef` is managing to let a `Message` to be put inside the `Actor`'s mailbox.
 
 Most of time, the client will be an actor itself, that ask to the self reference to send a message to another actor.
 
