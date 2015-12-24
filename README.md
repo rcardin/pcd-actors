@@ -283,6 +283,11 @@ Yes, you can (and you should do too).
 Yes, sure. You can add whatever method you think it could help. But, be aware: Do not modify the public interface of 
 these types because unit tests cannot rely on your custom interface.
 
+> **Q**: Should an `ActorRef` call directly the method `receive` of the corresponding `Actor`?
+ 
+Using the current architecture it is not possible. First of all, a `Message` has to be put into the `Actor`'s mailbox. 
+Then the `Message` becomes eligible for elaboration.
+
 ## License
 
 The MIT License (MIT)
