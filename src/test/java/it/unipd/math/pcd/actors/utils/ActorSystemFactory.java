@@ -35,47 +35,42 @@
  * @version 1.0
  * @since 1.0
  */
-package it.unipd.math.pcd.actors;
+package it.unipd.math.pcd.actors.utils;
 
-import it.unipd.math.pcd.actors.impl.ActorSystemImpl;
-import it.unipd.math.pcd.actors.utils.ActorSystemFactory;
-import it.unipd.math.pcd.actors.utils.actors.TrivialActor;
-import it.unipd.math.pcd.actors.utils.messages.TrivialMessage;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import it.unipd.math.pcd.actors.AbsActorSystem;
+import it.unipd.math.pcd.actors.ActorSystem;
+import org.reflections.Reflections;
+
+import java.util.Set;
 
 /**
- * Test cases about {@link ActorRef} type.
+ * Scans the classpath and instantiates the concrete class that implements {@link it.unipd.math.pcd.actors.ActorSystem}.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public class ActorRefTest {
-
-    private ActorSystem system;
+public class ActorSystemFactory {
+    private static final String BASE_PACKAGE = "it.unipd.math.pcd.actors";
 
     /**
-     * Initializes the {@code system} with a concrete implementation before each test.
+     * Returns an instance of the sole concrete class that implements {@link ActorSystem}.
+     *
+     * @return An instance of an implementation of {@link ActorSystem}
      */
-    @Before
-    public void init() {
-        system = ActorSystemFactory.buildActorSystem();
-    }
+    public static final ActorSystem buildActorSystem() {
+        ActorSystem system = null;
 
-    @Test
-    public void shouldImplementComparable() {
-        ActorRef ref1 = system.actorOf(TrivialActor.class);
-        ActorRef ref2 = system.actorOf(TrivialActor.class);
-        Assert.assertNotEquals("Two references must appear as different using the compareTo method",
-                0, ref1.compareTo(ref2));
-        Assert.assertEquals("A reference must be equal to itself according to compareTo method",
-                0, ref1.compareTo(ref1));
+        // XXX This code can be optimized
+        Reflections reflections = new Reflections(BASE_PACKAGE);
+        Set<Class<? extends AbsActorSystem>> subTypes = reflections.getSubTypesOf(AbsActorSystem.class);
+        Class<? extends AbsActorSystem> systemClass = subTypes.iterator().next();
+        try {
+            system = systemClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        return system;
     }
 }
-
-
-
-
-
