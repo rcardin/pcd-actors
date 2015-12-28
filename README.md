@@ -175,6 +175,26 @@ whole system satisfies above requirements.
 
 You're free (which means that you're expected) to add your own tests to your implementation of the actor system.
 
+### Create an instance of `ActorSystem`
+Tests need to create an instance of a concrete class that implements `ActorSystem`. Using the current architecture of
+`pcd-actors`, it is not possible to know which is the concrete class *a priori*. One solution to instantiate an object of 
+a concrete implementation of `ActorSystem` is using *reflection* mechanism. 
+
+In detail, the class `ActorSystemFactory` scans the classpath searching for all subtypes of class `AbsActorSystem`. 
+Through the method `buildActorSystem` it builds an instance of the first class found.
+ 
+    ActorSystemFactory.buildActorSystem()
+ 
+To accomplish this need an external library is used. Such library is [`org.reflections`](https://github.com/ronmamo/reflections).
+The library is added as dependency to the project only during testing process. Then, it cannot be used main code. 
+
+    <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+        <version>0.9.10</version>
+        <scope>test</scope>
+    </dependency>
+
 ## F.A.Q.
 
 > **Q**: The meta framework contains four interfaces and two abstract classes. What should I have to implement?
