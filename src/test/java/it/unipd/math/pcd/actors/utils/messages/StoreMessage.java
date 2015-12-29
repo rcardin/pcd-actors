@@ -35,53 +35,25 @@
  * @version 1.0
  * @since 1.0
  */
-package it.unipd.math.pcd.actors;
+package it.unipd.math.pcd.actors.utils.messages;
 
-import it.unipd.math.pcd.actors.*;
+import it.unipd.math.pcd.actors.Message;
 
 /**
- * Decorates an {@link ActorRef} adding the ability to get the underlying actor associated to the reference.
+ * Please, insert description here.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public class TestActorRef<T extends Message> implements ActorRef<T> {
+public class StoreMessage implements Message {
+    private String payload;
 
-    private ActorRef<T> reference;
-
-    public TestActorRef(ActorRef<T> actorRef) {
-        this.reference = actorRef;
+    public StoreMessage(String payload) {
+        this.payload = payload;
     }
 
-    /**
-     * Returns the {@link Actor} associated to the internal reference.
-     * @param system Actor system from which retrieving the actor
-     *
-     * @return An actor
-     */
-    public Actor<T> getUnderlyingActor(ActorSystem system) {
-        // TODO To implement
-        return null;
-    }
-
-    @Override
-    public void send(T message, ActorRef to) {
-        reference.send(message, to);
-    }
-
-    @Override
-    public int compareTo(ActorRef o) {
-        return reference.compareTo(o);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return reference.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return reference.hashCode();
+    public String getPayload() {
+        return payload;
     }
 }

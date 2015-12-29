@@ -45,7 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Please, insert description here.
+ * Tests features of an actors' system.
  *
  * @author Riccardo Cardin
  * @version 1.0

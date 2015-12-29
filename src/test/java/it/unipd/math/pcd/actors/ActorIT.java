@@ -37,51 +37,42 @@
  */
 package it.unipd.math.pcd.actors;
 
-import it.unipd.math.pcd.actors.*;
+import it.unipd.math.pcd.actors.utils.ActorSystemFactory;
+import it.unipd.math.pcd.actors.utils.actors.StoreActor;
+import it.unipd.math.pcd.actors.utils.actors.TrivialActor;
+import it.unipd.math.pcd.actors.utils.messages.StoreMessage;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Decorates an {@link ActorRef} adding the ability to get the underlying actor associated to the reference.
+ * Integration test suite on actor features.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public class TestActorRef<T extends Message> implements ActorRef<T> {
+public class ActorIT {
 
-    private ActorRef<T> reference;
-
-    public TestActorRef(ActorRef<T> actorRef) {
-        this.reference = actorRef;
-    }
+    private ActorSystem system;
 
     /**
-     * Returns the {@link Actor} associated to the internal reference.
-     * @param system Actor system from which retrieving the actor
-     *
-     * @return An actor
+     * Initializes the {@code system} with a concrete implementation before each test.
      */
-    public Actor<T> getUnderlyingActor(ActorSystem system) {
-        // TODO To implement
-        return null;
+    @Before
+    public void init() {
+        this.system = ActorSystemFactory.buildActorSystem();
     }
 
-    @Override
-    public void send(T message, ActorRef to) {
-        reference.send(message, to);
-    }
-
-    @Override
-    public int compareTo(ActorRef o) {
-        return reference.compareTo(o);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return reference.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return reference.hashCode();
+    @Test
+    public void shouldBeAbleToSendAMessage() throws InterruptedException {
+        TestActorRef ref = new TestActorRef(system.actorOf(StoreActor.class));
+        StoreActor actor = (StoreActor) ref.getUnderlyingActor(system);
+        // Send a string to the actor
+        ref.send(new StoreMessage("Hello World"), ref);
+        // Wait that the message is processed
+        Thread.sleep(1000);
+        // Verify that the message is been processed
+        Assert.assertEquals("The message have to be received by the actor", "Hello World", actor.getData());
     }
 }
