@@ -68,6 +68,15 @@ following method:
 To do the magic, it is necessary to use the instance of `ActorSystem` described below. Messages can be sent only among 
 actors. No other type can send a message to an actor.
 
+For *testing purpose*, it is necessary to give the possibility to retrieve the `Actor` associated to a reference. For 
+this reason, among the `test` types it's present the class `TestActorRef`. This class is a 
+[*decorator*](http://www.slideshare.net/RiccardoCardin/design-pattern-strutturali) of the `ActorRef`
+type, that adds a single method:
+    
+    protected abstract Actor<T> getUnderlyingActor(ActorSystem system);
+    
+Using this method it is possible to retrieve the corresponding `Actor`. The above method **must be implemented**.
+
 ### Message
 A `Message` is the piece of information that actor send among each others. Each message should be logically divided into
 three parts:
