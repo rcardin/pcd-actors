@@ -35,12 +35,9 @@
  * @version 1.0
  * @since 1.0
  */
-package it.unipd.math.pcd.actors.utils;
+package it.unipd.math.pcd.actors;
 
-import it.unipd.math.pcd.actors.Actor;
-import it.unipd.math.pcd.actors.ActorRef;
-import it.unipd.math.pcd.actors.ActorSystem;
-import it.unipd.math.pcd.actors.Message;
+import it.unipd.math.pcd.actors.*;
 
 /**
  * Decorates an {@link ActorRef} adding the ability to get the
