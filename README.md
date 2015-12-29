@@ -68,6 +68,8 @@ following method:
 To do the magic, it is necessary to use the instance of `ActorSystem` described below. Messages can be sent only among 
 actors. No other type can send a message to an actor.
 
+#### Actor reference for testing purpose
+
 For *testing purpose*, it is necessary to give the possibility to retrieve the `Actor` associated to a reference. For 
 this reason, among the `test` types it's present the class `TestActorRef`. This class is a 
 [*decorator*](http://www.slideshare.net/RiccardoCardin/design-pattern-strutturali) of the `ActorRef`
