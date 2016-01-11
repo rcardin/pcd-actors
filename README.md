@@ -58,7 +58,8 @@ different modes to address actors:
  * Local mode: the actor is running in the local machine
  * Remote mode: the actor may be running in a remote machine
  
-Using this abstraction a remote actor can be used as a local actor, simplify the model of processing.
+Using this abstraction a remote actor can be used as a local actor, simplify the model of processing. (**WARNING: This 
+feature is not requested anymore**)
  
 Once an instance of `ActorRef` was obtained, it is possible to send a messages to the corresponding actor using the 
 following method:
