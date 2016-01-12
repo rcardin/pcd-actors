@@ -109,6 +109,16 @@ methods:
 
     void stop();
     void stop(ActorRef<?> actor);
+
+Stopping an actor means that it cannot receive any message after the stopping operation. This operation must be accomplished
+*gracefully*, which means that an actor has to process the messages that are already present in the mailbox before
+stopping.
+
+Trying to do any operation on a stopped actor must rise an `UnsupportedMessageException`. An actually stopped actor 
+should be eligible for garbage collection by the JVM an no thread should be associated to it anymore.
+
+The `stop` method stops all the actors that are active in the actor system. Every actor has to be stopped *gracefully*,
+as stated in above sentences.
     
 #### Singleton view of the actor system
 The actor system MUST have a single active instance. This instance have to be necessarily initialized in the `main` 
