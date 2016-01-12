@@ -132,7 +132,7 @@ However, the use of an DI framework is far beyond the scopes of this little proj
 So, the above property must be fulfilled using other techniques, that do not use explicitly any form of design pattern
 Singleton
 
-### Type interactions
+### Type's interactions
 
 This section shows how the above types interact with each other to fulfill the relative functionality.
  
