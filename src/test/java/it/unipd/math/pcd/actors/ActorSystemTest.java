@@ -37,8 +37,10 @@
  */
 package it.unipd.math.pcd.actors;
 
+import it.unipd.math.pcd.actors.exceptions.NoSuchActorException;
 import it.unipd.math.pcd.actors.utils.ActorSystemFactory;
 import it.unipd.math.pcd.actors.utils.actors.TrivialActor;
+import it.unipd.math.pcd.actors.utils.messages.TrivialMessage;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -88,5 +90,19 @@ public class ActorSystemTest {
         ActorRef ref1 = system.actorOf(TrivialActor.class);
         ActorRef ref2 = system.actorOf(TrivialActor.class);
         Assert.assertNotEquals("Two references that points to the same actor implementation are not equal", ref1, ref2);
+    }
+
+    @Test(expected = NoSuchActorException.class)
+    public void shouldStopAnActorAndThisCouldNotBeAbleToReceiveNewMessages() {
+        ActorRef ref1 = system.actorOf(TrivialActor.class);
+        system.stop(ref1);
+        ref1.send(new TrivialMessage(), ref1);
+    }
+
+    @Test(expected = NoSuchActorException.class)
+    public void shouldStopAnActorAndThisCouldNotStoppedASecondTime() {
+        ActorRef ref1 = system.actorOf(TrivialActor.class);
+        system.stop(ref1);
+        system.stop(ref1);
     }
 }
