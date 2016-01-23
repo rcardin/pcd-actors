@@ -114,7 +114,7 @@ Stopping an actor means that it cannot receive any message after the stopping op
 *gracefully*, which means that an actor has to process the messages that are already present in the mailbox before
 stopping.
 
-Trying to do any operation on a stopped actor must rise an `UnsupportedMessageException`. An actually stopped actor 
+Trying to do any operation on a stopped actor must rise an `NoSuchActorException`. An actually stopped actor 
 should be eligible for garbage collection by the JVM an no thread should be associated to it anymore.
 
 The `stop` method stops all the actors that are active in the actor system. Every actor has to be stopped *gracefully*,
