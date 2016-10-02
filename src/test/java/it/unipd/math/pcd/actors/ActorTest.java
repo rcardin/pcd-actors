@@ -38,6 +38,7 @@
 package it.unipd.math.pcd.actors;
 
 import it.unipd.math.pcd.actors.utils.ActorSystemFactory;
+import it.unipd.math.pcd.actors.utils.Waiter;
 import it.unipd.math.pcd.actors.utils.actors.TrivialActor;
 import it.unipd.math.pcd.actors.utils.actors.counter.CounterActor;
 import it.unipd.math.pcd.actors.utils.actors.ping.pong.PingPongActor;
@@ -45,9 +46,13 @@ import it.unipd.math.pcd.actors.utils.actors.StoreActor;
 import it.unipd.math.pcd.actors.utils.messages.StoreMessage;
 import it.unipd.math.pcd.actors.utils.messages.counter.Increment;
 import it.unipd.math.pcd.actors.utils.messages.ping.pong.PingMessage;
+import it.unipd.math.pcd.actors.utils.messages.ping.pong.PongMessage;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.reflect.Method;
 
 /**
  * Integration test suite on actor features.
@@ -56,7 +61,7 @@ import org.junit.Test;
  * @version 1.0
  * @since 1.0
  */
-public class ActorIT {
+public class ActorTest {
 
     private ActorSystem system;
 
@@ -66,6 +71,11 @@ public class ActorIT {
     @Before
     public void init() {
         this.system = ActorSystemFactory.buildActorSystem();
+    }
+
+    @After
+    public void shutdown() throws IllegalAccessException, InterruptedException, NoSuchFieldException {
+        system.stop();
     }
 
     @Test
@@ -100,15 +110,47 @@ public class ActorIT {
 
     @Test
     public void shouldNotLooseAnyMessage() throws InterruptedException {
-        TestActorRef counter = new TestActorRef(system.actorOf(CounterActor.class));
-        for (int i = 0; i < 200; i++) {
+        final TestActorRef counter = new TestActorRef(system.actorOf(CounterActor.class));
+        for (int i = 0; i < 50; i++) {
             TestActorRef adder = new TestActorRef(system.actorOf(TrivialActor.class));
             adder.send(new Increment(), counter);
         }
 
+        Waiter.wait(new Waiter.Condition() {
+            @Override
+            public boolean evaluate() {
+                return ((CounterActor) counter.getUnderlyingActor(system)).getCounter() < 300;
+            }
+        }, 10);
+
+        Assert.assertEquals("A counter that was incremented 50 times should be equal to 50",
+                50, ((CounterActor) counter.getUnderlyingActor(system)).getCounter());
+    }
+
+    @Test
+    public void shouldRespondToTheRightSender() throws InterruptedException {
+        TestActorRef pingRef = new TestActorRef(system.actorOf(PingPongActor.class));
+        TestActorRef pongRef = new TestActorRef(system.actorOf(PingPongActor.class));
+        TestActorRef evilPongRef = new TestActorRef(system.actorOf(PingPongActor.class));
+
+        pongRef.send(new PingMessage(), pingRef);
+        evilPongRef.send(new PongMessage(), pingRef);
+
         Thread.sleep(2000);
 
-        Assert.assertEquals("A counter that was incremented 1000 times should be equal to 1000",
-                200, ((CounterActor) counter.getUnderlyingActor(system)).getCounter());
+        PingPongActor pingActor = (PingPongActor) pingRef.getUnderlyingActor(system);
+        PingPongActor pongActor = (PingPongActor) pongRef.getUnderlyingActor(system);
+        PingPongActor evilPongActor = (PingPongActor) evilPongRef.getUnderlyingActor(system);
+
+        Assert.assertEquals("A pong actor has received back a pong message", "Pong",
+                pongActor.getLastMessage().getMessage());
+        Assert.assertNull("Evil pong actor should not receive any message back", evilPongActor.getLastMessage());
+    }
+
+    @Test
+    public void shouldNotHaveModifiedTheGivenInterface() {
+        Method[] methods = Actor.class.getMethods();
+        // Check number of methods
+        Assert.assertEquals("Actor methods number must be equal to 1", 1, methods.length);
     }
 }

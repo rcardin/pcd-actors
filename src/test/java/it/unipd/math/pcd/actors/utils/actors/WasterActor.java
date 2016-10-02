@@ -35,33 +35,38 @@
  * @version 1.0
  * @since 1.0
  */
-package it.unipd.math.pcd.actors;
+package it.unipd.math.pcd.actors.utils.actors;
+
+import it.unipd.math.pcd.actors.AbsActor;
+import it.unipd.math.pcd.actors.utils.messages.TrivialMessage;
 
 /**
- * A reference of an actor that allow to locate it in the actor system.
- * Using this reference it is possible to send a message among actors.
+ * Waste some time for each message received.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface ActorRef<T extends Message> extends Comparable<ActorRef> {
+public class WasterActor extends AbsActor<TrivialMessage> {
 
-    /**
-     * Sends a {@code message} to another actor
-     *
-     * @param message The message to send
-     * @param to The actor to which sending the message
-     */
-    void send(T message, ActorRef to);
+    private int processed;
+
+    public WasterActor() {
+        this.processed = 0;
+    }
+
+    @Override
+    public void receive(TrivialMessage message) {
+        try {
+            processed++;
+            System.out.println(processed);
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // e.printStackTrace();
+        }
+    }
+
+    public int getProcessed() {
+        return processed;
+    }
 }
-
-
-
-
-
-
-
-
-
-

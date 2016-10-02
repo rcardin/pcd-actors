@@ -69,9 +69,13 @@ public interface ActorSystem {
     ActorRef<? extends Message> actorOf(Class<? extends Actor> actor);
 
     /**
-     * Stops {@code actor}.
+     * Stops gracefully the {@code actor}, which means that an actor has to process the messages that are already
+     * present in the mailbox before stopping.
      *
      * @param actor The actor to be stopped
+     *
+     * @throws it.unipd.math.pcd.actors.exceptions.NoSuchActorException if {@code actor} does not exist or it was
+     *         already been stopped
      */
     void stop(ActorRef<?> actor);
 

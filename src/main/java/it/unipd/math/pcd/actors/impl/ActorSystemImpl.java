@@ -35,33 +35,31 @@
  * @version 1.0
  * @since 1.0
  */
-package it.unipd.math.pcd.actors;
+package it.unipd.math.pcd.actors.impl;
+
+import it.unipd.math.pcd.actors.AbsActorSystem;
+import it.unipd.math.pcd.actors.ActorRef;
+import it.unipd.math.pcd.actors.LocalActorRefImpl;
 
 /**
- * A reference of an actor that allow to locate it in the actor system.
- * Using this reference it is possible to send a message among actors.
+ * Concrete implementation of the actor system.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface ActorRef<T extends Message> extends Comparable<ActorRef> {
+public class ActorSystemImpl extends AbsActorSystem {
 
-    /**
-     * Sends a {@code message} to another actor
-     *
-     * @param message The message to send
-     * @param to The actor to which sending the message
-     */
-    void send(T message, ActorRef to);
+    @Override
+    protected ActorRef createActorReference(ActorMode mode) {
+        ActorRef ref = null;
+        switch (mode) {
+            case LOCAL:
+                ref = new LocalActorRefImpl(this);
+                break;
+            case REMOTE:
+                throw new IllegalArgumentException("REMOTE mode is not yet supported");
+        }
+        return ref;
+    }
 }
-
-
-
-
-
-
-
-
-
-

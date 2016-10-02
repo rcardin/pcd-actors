@@ -39,11 +39,16 @@ package it.unipd.math.pcd.actors;
 
 import it.unipd.math.pcd.actors.exceptions.NoSuchActorException;
 import it.unipd.math.pcd.actors.utils.ActorSystemFactory;
+import it.unipd.math.pcd.actors.utils.Waiter;
 import it.unipd.math.pcd.actors.utils.actors.TrivialActor;
+import it.unipd.math.pcd.actors.utils.actors.WasterActor;
 import it.unipd.math.pcd.actors.utils.messages.TrivialMessage;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.reflect.Method;
 
 /**
  * Tests features of an actors' system.
@@ -54,55 +59,91 @@ import org.junit.Test;
  */
 public class ActorSystemTest {
 
-    private ActorSystem system;
+	private ActorSystem system;
 
-    /**
-     * Initializes the {@code system} with a concrete implementation before each test.
-     */
-    @Before
-    public void init() {
-        system = ActorSystemFactory.buildActorSystem();
-    }
+	/**
+	 * Initializes the {@code system} with a concrete implementation before each test.
+	 */
+	@Before
+	public void init() {
+		system = ActorSystemFactory.buildActorSystem();
+	}
 
-    @Test
-    public void shouldCreateAnActorRefWithActorOfTest() {
-        ActorRef ref = system.actorOf(TrivialActor.class);
-        Assert.assertNotNull("A reference was created and it is not null", ref);
-    }
+	@After
+	public void shutdown() throws IllegalAccessException, InterruptedException, NoSuchFieldException {
+		system.stop();
+	}
 
-    @Test
-    public void shouldCreateAnActorRefOfWithActorModeLocalTest() {
-        ActorRef ref = system.actorOf(TrivialActor.class, ActorSystem.ActorMode.LOCAL);
-        Assert.assertNotNull("A reference to a local actor was created and it is not null", ref);
-    }
+	@Test
+	public void shouldCreateAnActorRefWithActorOfTest() {
+		ActorRef ref = system.actorOf(TrivialActor.class);
+		Assert.assertNotNull("A reference was created and it is not null", ref);
+	}
 
-    /**
-     * It is not requested to implement remote mode for actors anymore. So, an attempt to create a remote
-     * actor should rise an {@link IllegalArgumentException}
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldCreateAnActorRefOfWithActorModeRemoteTest() {
-        system.actorOf(TrivialActor.class, ActorSystem.ActorMode.REMOTE);
-    }
+	@Test
+	public void shouldCreateAnActorRefOfWithActorModeLocalTest() {
+		ActorRef ref = system.actorOf(TrivialActor.class, ActorSystem.ActorMode.LOCAL);
+		Assert.assertNotNull("A reference to a local actor was created and it is not null", ref);
+	}
 
-    @Test
-    public void shouldBeAbleToCreateMoreThanOneActor() {
-        ActorRef ref1 = system.actorOf(TrivialActor.class);
-        ActorRef ref2 = system.actorOf(TrivialActor.class);
-        Assert.assertNotEquals("Two references that points to the same actor implementation are not equal", ref1, ref2);
-    }
+	/**
+	 * It is not requested to implement remote mode for actors anymore. So, an attempt to create a remote
+	 * actor should rise an {@link IllegalArgumentException}
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldCreateAnActorRefOfWithActorModeRemoteTest() {
+		system.actorOf(TrivialActor.class, ActorSystem.ActorMode.REMOTE);
+	}
 
-    @Test(expected = NoSuchActorException.class)
-    public void shouldStopAnActorAndThisCouldNotBeAbleToReceiveNewMessages() {
-        ActorRef ref1 = system.actorOf(TrivialActor.class);
-        system.stop(ref1);
-        ref1.send(new TrivialMessage(), ref1);
-    }
+	@Test
+	public void shouldBeAbleToCreateMoreThanOneActor() {
+		ActorRef ref1 = system.actorOf(TrivialActor.class);
+		ActorRef ref2 = system.actorOf(TrivialActor.class);
+		Assert.assertNotEquals("Two references that points to the same actor implementation are not equal", ref1, ref2);
+	}
 
-    @Test(expected = NoSuchActorException.class)
-    public void shouldStopAnActorAndThisCouldNotStoppedASecondTime() {
-        ActorRef ref1 = system.actorOf(TrivialActor.class);
-        system.stop(ref1);
-        system.stop(ref1);
-    }
+	@Test(expected = NoSuchActorException.class)
+	public void shouldStopAnActorAndThisCouldNotBeAbleToReceiveNewMessages() {
+		ActorRef ref1 = system.actorOf(TrivialActor.class);
+		system.stop(ref1);
+		ref1.send(new TrivialMessage(), ref1);
+	}
+
+	@Test(expected = NoSuchActorException.class)
+	public void shouldStopAnActorAndThisCouldNotStoppedASecondTime() {
+		ActorRef ref1 = system.actorOf(TrivialActor.class);
+		system.stop(ref1);
+		system.stop(ref1);
+	}
+
+	@Test(expected = NoSuchActorException.class)
+	public void shouldProcessAllMessagesBeforeStop() throws InterruptedException {
+		TestActorRef wasterRef = new TestActorRef(system.actorOf(WasterActor.class));
+		ActorRef trivialRef = system.actorOf(TrivialActor.class);
+		for (int i = 0; i < 20; i++) {
+			trivialRef.send(new TrivialMessage(), wasterRef);
+		}
+		// Get the actor
+		final WasterActor waster = (WasterActor) wasterRef.getUnderlyingActor(system);
+
+		system.stop(wasterRef);
+
+		Waiter.wait(new Waiter.Condition() {
+			@Override
+			public boolean evaluate() {
+				return waster.getProcessed() < 20;
+			}
+		}, 30);
+
+		Assert.assertEquals("The actor must have processed 20 messages before dying", 20, waster.getProcessed());
+
+		trivialRef.send(new TrivialMessage(), wasterRef);
+	}
+
+	@Test
+	public void shouldNotHaveModifiedTheGivenInterface() {
+		Method[] methods = ActorSystem.class.getMethods();
+		// Check number of methods
+		Assert.assertEquals("ActorSystem methods number must be equal to 4", 4, methods.length);
+	}
 }

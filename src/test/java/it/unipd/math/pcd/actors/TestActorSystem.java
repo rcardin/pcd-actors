@@ -37,31 +37,36 @@
  */
 package it.unipd.math.pcd.actors;
 
+import it.unipd.math.pcd.actors.utils.Waiter;
+
+import java.lang.reflect.Field;
+import java.util.Map;
+
 /**
- * A reference of an actor that allow to locate it in the actor system.
- * Using this reference it is possible to send a message among actors.
+ * Please, insert description here.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface ActorRef<T extends Message> extends Comparable<ActorRef> {
+public class TestActorSystem {
+    private ActorSystem system;
 
-    /**
-     * Sends a {@code message} to another actor
-     *
-     * @param message The message to send
-     * @param to The actor to which sending the message
-     */
-    void send(T message, ActorRef to);
+    public TestActorSystem(ActorSystem system) {
+        this.system = system;
+    }
+
+    public void stop() throws NoSuchFieldException, IllegalAccessException, InterruptedException {
+        this.system.stop();
+        Field actorsField = AbsActorSystem.class.
+                getDeclaredField("actors");
+        actorsField.setAccessible(true);
+        final Map<ActorRef<?>, Actor<?>> actors = (Map<ActorRef<?>, Actor<?>>) actorsField.get(this.system);
+        Waiter.wait(new Waiter.Condition() {
+            @Override
+            public boolean evaluate() {
+                return !actors.isEmpty();
+            }
+        }, 30);
+    }
 }
-
-
-
-
-
-
-
-
-
-

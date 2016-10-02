@@ -39,7 +39,14 @@ package it.unipd.math.pcd.actors;
 
 import it.unipd.math.pcd.actors.exceptions.NoSuchActorException;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * A map-based implementation of the actor system.
@@ -53,7 +60,20 @@ public abstract class AbsActorSystem implements ActorSystem {
     /**
      * Associates every Actor created with an identifier.
      */
-    private Map<ActorRef<?>, Actor<?>> actors;
+    private Map<ActorRef<?>, ActorInfo> actors;
+
+    /**
+     * The executor that manage threads associated to actors
+     */
+    private ExecutorService service;
+
+    public AbsActorSystem() {
+        // For now, let the map be synchronized
+        this.actors = Collections.synchronizedMap(new HashMap<ActorRef<?>, ActorInfo>());
+        // Build the executor service
+        // XXX Is it the right policy to use?
+        this.service = Executors.newCachedThreadPool();
+    }
 
     @Override
     public ActorRef<? extends Message> actorOf(Class<? extends Actor> actor, ActorMode mode) {
@@ -63,10 +83,12 @@ public abstract class AbsActorSystem implements ActorSystem {
         try {
             // Create the reference to the actor
             reference = this.createActorReference(mode);
-            // Create the new instance of the actor
-            Actor actorInstance = ((AbsActor) actor.newInstance()).setSelf(reference);
+            // Create the new instance of the actor and set its actor system
+            AbsActor<?> actorInstance = ((AbsActor) actor.newInstance()).setActorSystem(this).setSelf(reference);
+            // Start the actor
+            ActorInfo info = startActor(actorInstance);
             // Associate the reference to the actor
-            actors.put(reference, actorInstance);
+            actors.put(reference, info);
 
         } catch (InstantiationException | IllegalAccessException e) {
             throw new NoSuchActorException(e);
@@ -74,10 +96,94 @@ public abstract class AbsActorSystem implements ActorSystem {
         return reference;
     }
 
+    /**
+     * Starts a task for the {@code actor} and returns information to
+     * control the execution
+     *
+     * @param actor
+     *
+     * @return Information to control actor execution
+     */
+    private ActorInfo startActor(AbsActor<?> actor) {
+        AbsActor.ActorRunnable task = actor.getTask();
+        Future<?> future = this.service.submit(task);
+        return new ActorInfo(actor, future);
+    }
+
     @Override
     public ActorRef<? extends Message> actorOf(Class<? extends Actor> actor) {
         return this.actorOf(actor, ActorMode.LOCAL);
     }
 
+    /**
+     * Returns the actor implementation that is associated to {@code ref}.
+     *
+     * @param ref A reference to an actor
+     * @return An actor implementation
+     *
+     * @throws NoSuchActorException If {@code ref} is not associated to any actor implementation
+     */
+    Actor<? extends Message> findActor(ActorRef<? extends Message> ref) {
+        return find(ref).getActor();
+    }
+
+    /**
+     * Return execution information about {@code ref}.
+     *
+     * @param ref The reference to the actor
+     * @return Execution information about {@code ref}
+     *
+     * @throws NoSuchActorException If {@code ref} is not associated to any actor implementation
+     */
+    private ActorInfo find(ActorRef<? extends Message> ref) {
+        ActorInfo info = this.actors.get(ref);
+        if (info == null) {
+            throw new NoSuchActorException("No actor found with reference " + ref.hashCode());
+        }
+        return info;
+    }
+
     protected abstract ActorRef createActorReference(ActorMode mode);
+
+    @Override
+    public void stop(ActorRef<?> actor) {
+        // Stopping an actor means to remove it from the map. This guarantees that no
+        // new message will be sent to the actor
+        ActorInfo info = this.find(actor);
+        // Also, the actor task must be stopped
+        info.stop();
+        this.actors.remove(actor);
+    }
+
+    @Override
+    public void stop() {
+        // Stop each actor
+        Iterator<ActorRef<?>> it = this.actors.keySet().iterator();
+        while (it.hasNext()) {
+            stop(it.next());
+            it = this.actors.keySet().iterator();
+        }
+        this.actors.clear();
+    }
+
+    class ActorInfo {
+        private Actor<?> actor;
+        private Future<?> future;
+
+        public ActorInfo(Actor<?> actor, Future<?> future) {
+            this.actor = actor;
+            this.future = future;
+        }
+
+        public Actor<?> getActor() {
+            return actor;
+        }
+
+        /**
+         * Tries to cancel the future associated to actor's execution
+         */
+        public void stop() {
+            this.future.cancel(true);
+        }
+    }
 }

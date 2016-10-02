@@ -37,31 +37,43 @@
  */
 package it.unipd.math.pcd.actors;
 
+import it.unipd.math.pcd.actors.*;
+
 /**
- * A reference of an actor that allow to locate it in the actor system.
- * Using this reference it is possible to send a message among actors.
+ * A reference to an actor implementation that runs locally.
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface ActorRef<T extends Message> extends Comparable<ActorRef> {
+public class LocalActorRefImpl implements ActorRef {
 
-    /**
-     * Sends a {@code message} to another actor
-     *
-     * @param message The message to send
-     * @param to The actor to which sending the message
-     */
-    void send(T message, ActorRef to);
+    private AbsActorSystem system;
+
+    public LocalActorRefImpl(AbsActorSystem system) {
+        this.system = system;
+    }
+
+    @Override
+    public void send(Message message, ActorRef to) {
+        // Retrieve the actor implementation associated to "to" ref
+        Actor<? extends Message> actor = system.findActor(to);
+        // Put the message into the mailbox
+        ((AbsActor) actor).send(message, this);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+
+        int result = 0;
+
+        if (this.hashCode() == o.hashCode())
+            result = 0;
+        if (this.hashCode() < o.hashCode())
+            result = -1;
+        if (this.hashCode() > o.hashCode())
+            result = 1;
+
+        return result;
+    }
 }
-
-
-
-
-
-
-
-
-
-

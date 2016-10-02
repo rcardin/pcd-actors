@@ -35,33 +35,41 @@
  * @version 1.0
  * @since 1.0
  */
-package it.unipd.math.pcd.actors;
+package it.unipd.math.pcd.actors.utils;
 
 /**
- * A reference of an actor that allow to locate it in the actor system.
- * Using this reference it is possible to send a message among actors.
+ * Permits to wait on a condition
  *
  * @author Riccardo Cardin
  * @version 1.0
  * @since 1.0
  */
-public interface ActorRef<T extends Message> extends Comparable<ActorRef> {
+public class Waiter {
 
     /**
-     * Sends a {@code message} to another actor
-     *
-     * @param message The message to send
-     * @param to The actor to which sending the message
+     * Default sleeping time between two different retries.
      */
-    void send(T message, ActorRef to);
+    public static final int SLEEP_TIME = 2000;
+
+    /**
+     * Waits untils {@code condition} is fulfilled or the condition was evaluated for
+     * a {@code maxRetry} of times. Between each evaluation the waiter waits for {@link #SLEEP_TIME}
+     * milliseconds
+     *
+     * @param condition The condition to evaluate
+     * @param maxRetry Maximum number of retries
+     *
+     * @throws InterruptedException
+     */
+    public static void wait(Condition condition, int maxRetry) throws InterruptedException {
+        int retry = 0;
+        while (condition.evaluate() && retry < maxRetry) {
+            retry++;
+            Thread.sleep(SLEEP_TIME);
+        }
+    }
+
+    public static interface Condition {
+        boolean evaluate();
+    }
 }
-
-
-
-
-
-
-
-
-
-

@@ -37,13 +37,13 @@
  */
 package it.unipd.math.pcd.actors;
 
-import it.unipd.math.pcd.actors.impl.ActorSystemImpl;
 import it.unipd.math.pcd.actors.utils.ActorSystemFactory;
 import it.unipd.math.pcd.actors.utils.actors.TrivialActor;
-import it.unipd.math.pcd.actors.utils.messages.TrivialMessage;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.reflect.Method;
 
 /**
  * Test cases about {@link ActorRef} type.
@@ -62,6 +62,16 @@ public class ActorRefTest {
     @Before
     public void init() {
         system = ActorSystemFactory.buildActorSystem();
+    }
+
+    @Test
+    public void shouldNotHaveModifiedTheGivenInterface() {
+        Method[] methods = ActorRef.class.getMethods();
+        // Check number of methods
+        Assert.assertEquals("ActorRef methods number must be equal to 1", 2, methods.length);
+        // Check the signature
+        Method method = methods[0];
+        Assert.assertEquals("ActorRef sole method must be called 'send'", "send", method.getName());
     }
 
     @Test
